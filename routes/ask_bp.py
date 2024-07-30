@@ -8,6 +8,6 @@ def ask_endpoint():
     data = request.get_json()
     query = data.get('query')
     ask_controller = AskController()
-    response_message, file_name = ask_controller.ask_endpoint(query)
+    response_message = ask_controller.ask_endpoint(query)
     return jsonify(
-        {'response_message': response_message, 'file_name': file_name, 'reference': f"Reference: {file_name}"})
+        {'response_message': response_message})

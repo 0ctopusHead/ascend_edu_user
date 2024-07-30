@@ -7,7 +7,8 @@ class AskController:
         pass
 
     def ask_endpoint(self, query):
-        response_message, file_name = self.ask_service.ask(query)
-        return response_message, file_name
+        response_message = self.ask_service.ask(query)
+        print(response_message)
+        return response_message
 
 

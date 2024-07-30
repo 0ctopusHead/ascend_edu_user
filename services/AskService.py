@@ -1,13 +1,11 @@
-from openai import OpenAI, OpenAIError
-
-from scipy import spatial
+import concurrent.futures
 import pandas as pd
+import json
 import os
 import tiktoken
-from app import mongo
-
-
-db = mongo.db
+from openai import OpenAI
+from scipy import spatial
+from dotenv import load_dotenv
 
 
 class AskServiceError(Exception):
@@ -17,13 +15,16 @@ class AskServiceError(Exception):
 class AskService:
 
     def __init__(self):
-        self.client = OpenAI()
+        load_dotenv()
+        OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
+        os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
+        self.client = OpenAI(api_key=OPENAI_API_KEY)
+
         self.GPT_MODEL = "gpt-3.5-turbo"
         self.EMBEDDING_MODEL = "text-embedding-3-small"
 
-
-    def strings_ranked_by_relatedness(self, query: str, df: pd.DataFrame, top_n: int = 100) -> tuple[
-        list[str], list[str], list[float]]:
+    def strings_ranked_by_relatedness(self, query: str, df: pd.DataFrame, top_n: int = 100) -> tuple[list[str], list[str], list[float]]:
         query_embedding_response = self.client.embeddings.create(model=self.EMBEDDING_MODEL, input=query)
         query_embedding = query_embedding_response.data[0].embedding
         strings_and_relatednesses = [
@@ -57,12 +58,35 @@ class AskService:
                 message += next_article
         return message + question, file_names[0]
 
-    def ask(self, query: str, model: str = None, token_budget: int = 4096 - 500) -> tuple[str, str]:
+    def retrieve_json_from_openai(self, file_id):
+        response = self.client.files.content(file_id)
+        file_content = response.content.decode('utf-8')
+        data = json.loads(file_content)
+        return data
+
+    def fetch_data_from_openai(self):
+        try:
+            files = self.client.files.list().data
+
+            def fetch_file_data(file):
+                return self.retrieve_json_from_openai(file.id)
+
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                all_data = list(executor.map(fetch_file_data, files))
+
+            df = pd.DataFrame(all_data)
+            normalize_df = pd.json_normalize(df[0])
+
+            print(normalize_df.head())
+            return normalize_df
+        except Exception as e:
+            raise AskServiceError(f"Error fetching data from OpenAI: {e}")
+
+    def ask(self, query: str, model: str = None, token_budget: int = 4096 - 500) -> str:
         if model is None:
             model = self.GPT_MODEL
-        encoded_files = db.EmbeddedPDF.find({}, {'text_chunk': 1, 'embedded_array': 1, 'file_name': 1, 'hash_key': 1})
-        decoded_df = pd.DataFrame(encoded_files)
-        response_message, file_name = self.query_message(query, df=decoded_df, model=model, token_budget=token_budget)
+        data_df = self.fetch_data_from_openai()
+        response_message, file_name = self.query_message(query, df=data_df, model=model, token_budget=token_budget)
         messages = [
             {"role": "system", "content": "You answer questions Academic details"},
             {"role": "user", "content": response_message},
@@ -73,4 +97,9 @@ class AskService:
             temperature=0
         )
         response_message = response.choices[0].message.content
-        return response_message, file_name
+        print(response_message)
+        if response_message == "I don't know.":
+            pass
+        else:
+            response_message = f"{response_message} \nReference: {file_name}"
+        return response_message
