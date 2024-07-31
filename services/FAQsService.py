@@ -53,7 +53,6 @@ class FAQsService:
                     "processed_tokens": processed_tokens
                 }
                 self.database.queries_collection.insert_one(query_doc)
-                self.find_relevant_faq(user_query)
                 return query_doc
             else:
                 raise ValueError("Query is not relevant to academic information")
@@ -86,23 +85,6 @@ class FAQsService:
         potential_faqs = [faq_texts[i] for i in top_indices]
 
         return potential_faqs
-
-    def find_relevant_faq(self, user_query):
-        faq_texts = [faq['question'] for faq in self.predefined_faqs]
-
-        if not faq_texts:
-            return None
-
-        faq_matrix = self.tf_idf_vectorizer.fit_transform(faq_texts)
-        query_vector = self.tf_idf_vectorizer.transform([user_query])
-        similarities = cosine_similarity(query_vector, faq_matrix).flatten()
-        most_similar_index = np.argmax(similarities)
-        most_similar_score = similarities[most_similar_index]
-
-        if most_similar_score >= 0.8:
-            return self.predefined_faqs[most_similar_index]
-        else:
-            return None
 
     def store_faqs(self, potential_faqs):
         self.database.faqs_collection.delete_many({})
