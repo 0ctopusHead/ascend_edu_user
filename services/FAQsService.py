@@ -69,7 +69,7 @@ class FAQsService:
         if not recent_queries:
             return []
 
-        query_texts = [query['text'] for query in recent_queries]
+        query_texts = [" ".join(query['processed_tokens']) for query in recent_queries]
         predefined_faqs = self.predefined_faqs
         faq_texts = [faq['question'] for faq in predefined_faqs]
         if not faq_texts:
