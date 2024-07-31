@@ -25,3 +25,4 @@ class BM25(object):
         idf = self.vectorizer._tfidf.idf_[None, q.indices] - 1.
         numer = y.multiply(np.broadcast_to(idf, y.shape)) * (k1 + 1)
         return (numer / denom).sum(1).A1
+
