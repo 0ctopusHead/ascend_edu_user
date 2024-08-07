@@ -5,7 +5,7 @@ from utils.preprocress import preprocess
 from utils.BM25 import BM25
 from collections import Counter
 import numpy as np
-from sklearn.metrics.pairwise import cosine_similarity
+
 db = mongo.db
 ttl_duration = 14 * 24 * 60 * 60
 db.queries_collection.create_index("date", expireAfterSeconds=ttl_duration)
@@ -15,7 +15,7 @@ class FAQsService:
     def __init__(self):
         self.database = db
         self.relevant_keywords = ["schedule", "syllabus", "regulation", "course", "exam", "grades", "lectures",
-                                  "assignments", "examination"]
+                                  "assignments", "examination", "content"]
         self.tf_idf_vectorizer = TfidfVectorizer()
         self.bm25 = BM25(self.tf_idf_vectorizer)
         self.counter = Counter
@@ -59,38 +59,47 @@ class FAQsService:
         except Exception as e:
             raise e
 
-    def fetch_recent_queries(self):
-        two_weeks_ago = datetime.datetime.utcnow() - datetime.timedelta(weeks=2)
-        recent_queries = list(self.database.queries_collection.find({"date": {"$gte": two_weeks_ago}}))
-        return recent_queries
-
     def identify_potential_faqs(self, top_n=5):
-        recent_queries = self.fetch_recent_queries()
-        if not recent_queries:
-            return []
+        try:
+            two_weeks_ago = datetime.datetime.utcnow() - datetime.timedelta(weeks=2)
+            recent_queries = list(self.database.queries_collection.find({"date": {"$gte": two_weeks_ago}}))
+            if not recent_queries:
+                return []
 
-        query_texts = [" ".join(query['processed_tokens']) for query in recent_queries]
-        predefined_faqs = self.predefined_faqs
-        faq_texts = [faq['question'] for faq in predefined_faqs]
-        if not faq_texts:
-            return []
-        self.bm25.fit(faq_texts)
-        scores = []
-        for query in query_texts:
-            score = self.bm25.transform(query)
-            scores.append(score)
-        average_scores = np.mean(scores, axis=0)
-        print(average_scores)
-        top_indices = np.argsort(average_scores)[-top_n:][::-1]
-        potential_faqs = [faq_texts[i] for i in top_indices]
+            query_texts = [" ".join(query['processed_tokens']) for query in recent_queries]
+            predefined_faqs = self.predefined_faqs
+            faq_texts = [faq['question'] for faq in predefined_faqs]
+            if not faq_texts:
+                return []
+            self.bm25.fit(faq_texts)
+            scores = []
+            for query in query_texts:
+                score = self.bm25.transform(query)
+                scores.append(score)
+            average_scores = np.mean(scores, axis=0)
+            print(average_scores)
+            top_indices = np.argsort(average_scores)[-top_n:][::-1]
+            potential_faqs = [faq_texts[i] for i in top_indices]
 
-        return potential_faqs
+            self.database.faqs_collection.delete_many({})
+            for faq in potential_faqs:
+                faq_doc = {
+                    "question": faq,
+                    "date": datetime.datetime.utcnow()
+                }
+                self.database.faqs_collection.update_one({"question": faq}, {"$set": faq_doc}, upsert=True)
 
-    def store_faqs(self, potential_faqs):
-        self.database.faqs_collection.delete_many({})
-        for faq in potential_faqs:
-            faq_doc = {
-                "question": faq,
-                "tokens": preprocess(faq)
-            }
-            self.database.faqs_collection.update_one({"question": faq}, {"$set": faq_doc}, upsert=True)
+            return potential_faqs
+        except Exception as e:
+            raise e
+
+    def get_faqs(self):
+        faqs_cursor = self.database.faqs_collection.find({})
+        total_faqs = []
+        for faq in faqs_cursor:
+            faq["_id"] = faqs_cursor["_id"]
+            total_faqs.append(faq)
+        return total_faqs
+
+
+
