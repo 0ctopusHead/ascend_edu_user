@@ -5,7 +5,7 @@ from utils.preprocress import preprocess
 from utils.BM25 import BM25
 from collections import Counter
 import numpy as np
-
+from bson import ObjectId
 db = mongo.db
 ttl_duration = 14 * 24 * 60 * 60
 db.queries_collection.create_index("date", expireAfterSeconds=ttl_duration)
@@ -84,6 +84,7 @@ class FAQsService:
             self.database.faqs_collection.delete_many({})
             for faq in potential_faqs:
                 faq_doc = {
+                    "_id": str(ObjectId()),
                     "question": faq,
                     "date": datetime.datetime.utcnow()
                 }
@@ -94,11 +95,7 @@ class FAQsService:
             raise e
 
     def get_faqs(self):
-        faqs_cursor = self.database.faqs_collection.find({})
-        total_faqs = []
-        for faq in faqs_cursor:
-            faq["_id"] = faqs_cursor["_id"]
-            total_faqs.append(faq)
+        total_faqs = list(self.database.faqs_collection.find({}, {"question": 1, "_id": 0}))
         return total_faqs
 
 

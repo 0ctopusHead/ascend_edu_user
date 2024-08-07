@@ -21,3 +21,9 @@ def trigger_compute_and_store_faqs():
     except Exception as e:
         raise e
 
+
+@faqs_bp.route('/get_faqs', methods=['GET'])
+def get_frequently_asked_question():
+    faqs_controller = FAQsController()
+    faqs = faqs_controller.get_faqs()
+    return jsonify({"faqs": faqs})

@@ -13,3 +13,7 @@ class FAQsController:
     def compute_and_store_faqs(self):
         potential_faqs = self.faqs_service.identify_potential_faqs()
         return potential_faqs
+
+    def get_faqs(self):
+        faqs = self.faqs_service.get_faqs()
+        return faqs
