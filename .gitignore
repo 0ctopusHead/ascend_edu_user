@@ -1,4 +1,1 @@
 .env
-
-dump.rdb
-celerybeat-schedule.db

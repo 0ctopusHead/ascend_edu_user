@@ -6,6 +6,7 @@ from utils.BM25 import BM25
 from collections import Counter
 import numpy as np
 from bson import ObjectId
+from flask import jsonify
 db = mongo.db
 ttl_duration = 14 * 24 * 60 * 60
 db.queries_collection.create_index("date", expireAfterSeconds=ttl_duration)
@@ -54,8 +55,6 @@ class FAQsService:
                 }
                 self.database.queries_collection.insert_one(query_doc)
                 return query_doc
-            else:
-                raise ValueError("Query is not relevant to academic information")
         except Exception as e:
             raise e
 
@@ -64,13 +63,12 @@ class FAQsService:
             two_weeks_ago = datetime.datetime.utcnow() - datetime.timedelta(weeks=2)
             recent_queries = list(self.database.queries_collection.find({"date": {"$gte": two_weeks_ago}}))
             if not recent_queries:
-                return []
+                raise ValueError("Could not find any queries from the last two weeks")
 
             query_texts = [" ".join(query['processed_tokens']) for query in recent_queries]
             predefined_faqs = self.predefined_faqs
             faq_texts = [faq['question'] for faq in predefined_faqs]
-            if not faq_texts:
-                return []
+
             self.bm25.fit(faq_texts)
             scores = []
             for query in query_texts:
@@ -90,13 +88,18 @@ class FAQsService:
                 }
                 self.database.faqs_collection.update_one({"question": faq}, {"$set": faq_doc}, upsert=True)
 
-            return potential_faqs
+            return jsonify({"message": "The FAQs are successfully calculated"}), 200
         except Exception as e:
             raise e
 
     def get_faqs(self):
-        total_faqs = list(self.database.faqs_collection.find({}, {"question": 1, "_id": 0}))
-        return total_faqs
+        try:
+            total_faqs = list(self.database.faqs_collection.find({}, {"question": 1, "_id": 0}))
+            if not total_faqs:
+                raise ValueError("No FAQs found in the database")
+            return total_faqs
+        except Exception as e:
+            raise e
 
 
 

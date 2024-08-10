@@ -1,9 +1,5 @@
-from flask import Flask
-from flask_cors import CORS
 from flask_pymongo import PyMongo
-from flask_timeloop import Timeloop
 from config import create_app
-from datetime import timedelta
 
 app = create_app()
 mongo = PyMongo(app)
