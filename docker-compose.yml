@@ -24,4 +24,4 @@ services:
     ports:
       - 5000:5000
     environment:
-      MONGO_IP_ADDRESS: mongodb://root:password@67.205.191.74:27017/ascend-edu
+      MONGO_IP_ADDRESS: mongodb://root:password@mongo:27017/ascend-edu
