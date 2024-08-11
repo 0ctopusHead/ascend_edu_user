@@ -20,7 +20,7 @@ jobs:
       run: |
         echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> $GITHUB_ENV
         echo "MONGO_URI=${{ secrets.MONGO_URI }}" >> $GITHUB_ENV
-        python -c 'import os;print(os.environ.get('MONGO_URI'))'
+        python -c 'import os;print(os.environ['MONGO_URI'])'
       
 
     - name: Set up QEMU
