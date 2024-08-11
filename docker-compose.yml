@@ -19,3 +19,8 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: password
       ME_CONFIG_MONGODB_URL: mongodb://root:${MONGO_IP_ADDRESS}@mongo:27017/
       ME_CONFIG_BASICAUTH: false
+
+  backend:
+    image: octopushead/ascend-edu:latest
+    ports:
+      - 8999:8080
