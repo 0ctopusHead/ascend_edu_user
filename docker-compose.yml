@@ -1,21 +1,8 @@
 version: '3'
 services:
-  mongo:
-    image: mongo:latest
-    container_name: my-mongo
-    restart: always
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: password
-    volumes:
-      - mongo-data:/data/db
-    ports:
-      - 27017:27017
-
   web:
     build: '.'
     image: octopushead/ascend-user:latest
     ports:
       - 5000:5000
-    environment:
-      MONGO_IP_ADDRESS: mongodb://root:password@mongo:27017/ascend-edu
+
