@@ -62,3 +62,5 @@ jobs:
           docker compose pull
           docker compose up -d
           rm -rf /home/root/backend
+          sudo systemctl restart gunicorn
+          sudo systemctl restart nginx
