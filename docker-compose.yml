@@ -2,9 +2,9 @@ version: '3'
 services:
   web:
     build: '.'
+    image: octopushead/ascend-user:latest
     environment:
       - MONGO_URI=${MONGO_URI}
-    image: octopushead/ascend-user:latest
     ports:
       - 5000:5000
 
