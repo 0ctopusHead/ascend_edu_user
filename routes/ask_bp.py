@@ -1,10 +1,11 @@
 from flask import jsonify, Blueprint, request
 from controller.AskController import AskController
 from controller.FAQsController import FAQsController
+
 ask_bp = Blueprint('ask_bp', __name__)
 
 
-@ask_bp.route('/ask', methods=['POST'])
+@ask_bp.route('/ask/', methods=['POST'])
 def ask_endpoint():
     data = request.get_json()
     query = data.get('query')
@@ -14,5 +15,10 @@ def ask_endpoint():
     faqs_controller.handle_user_query(query)
 
     return jsonify(
+
         {'response_message': response_message})
 
+
+@ask_bp.route('/projects/')
+def projects():
+    return 'The project page'
