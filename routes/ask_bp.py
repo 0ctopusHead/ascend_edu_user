@@ -19,6 +19,6 @@ def ask_endpoint():
         {'response_message': response_message})
 
 
-@ask_bp.route('/projects/')
+@ask_bp.route('/projects/', methods=['GET'])
 def projects():
     return 'The project page'
