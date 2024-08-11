@@ -1,11 +1,8 @@
 FROM python:3.10
 
-ENV GROUP_ID=1000 \
-    USER_ID=1000
 
-WORKDIR /var/www
-COPY . /var/www
-
+WORKDIR /app
+COPY . /app
 
 RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install gunicorn

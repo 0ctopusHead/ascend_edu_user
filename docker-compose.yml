@@ -36,8 +36,6 @@ services:
       MONGODB_PASSWORD: password
       MONGODB_HOSTNAME: mongodb
     volumes:
-      - appdata:/var/www
+      - appdata:/app
     depends_on:
       - mongodb
-    networks:
-      - backend
