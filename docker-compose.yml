@@ -5,5 +5,5 @@ services:
     image: octopushead/ascend-user:latest
     ports:
       - 5000:5000
-    environment:
+    env_file:
       - MONGO_URI=${MONGO_URI}
