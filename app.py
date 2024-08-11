@@ -13,4 +13,9 @@ if __name__ == '__main__':
     from routes.faqs_bp import faqs_bp
     app.register_blueprint(faqs_bp)
 
+
+    @app.route("/")
+    def favicon():
+        return "Heeeeeeee", 200
+
     app.run(host='0.0.0.0', port=5000)
