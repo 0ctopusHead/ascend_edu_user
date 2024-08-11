@@ -19,23 +19,7 @@ services:
       ME_CONFIG_MONGODB_URL: mongodb://root:$67.205.191.74@mongo:27017/
       ME_CONFIG_BASICAUTH: false
 
-  flask:
-    build:
-      context: app
-      dockerfile: Dockerfile
-    container_name: flask
-    image: octopushead/ascend_user:latest
-    restart: unless-stopped
-    tty: true
-    environment:
-      APP_ENV: "dev"
-      APP_DEBUG: "True"
-      APP_PORT: 5000
-      MONGODB_DATABASE: ascend_edu
-      MONGODB_USERNAME: root
-      MONGODB_PASSWORD: password
-      MONGODB_HOSTNAME: mongodb
-    volumes:
-      - appdata:/app
-    depends_on:
-      - mongodb
+  web:
+    build: '.'
+    ports:
+      - '5000:5000'
