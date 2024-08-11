@@ -17,6 +17,9 @@ jobs:
       run: |
         echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> $GITHUB_ENV
         echo "MONGO_URI=${{ secrets.MONGO_URI }}" >> $GITHUB_ENV
+      env:
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        MONGO_URI: ${{ secrets.MONGO_URI }}
 
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v2
