@@ -61,6 +61,7 @@ jobs:
         password: ${{ secrets.HOST_PASSWORD }}
         key: ${{ secrets.HOST_SSH_PRIVATE_KEY }}
         port: 22
+        envs: "MONGO_URI=${{ secrets.MONGO_URI }}"
         script: |
           cd /home/root/backend
           echo ${{ secrets.DOCKER_HUB_TOKEN }} | docker login --username ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
