@@ -53,6 +53,7 @@ jobs:
       with:
         host: ${{ secrets.HOST_SERVER }}
         username: ${{ secrets.HOST_USER_NAME }}
+        password: ${{ secrets.HOST_PASSWORD }}
         key: ${{ secrets.HOST_SSH_PRIVATE_KEY }}
         port: 22
         script: |
