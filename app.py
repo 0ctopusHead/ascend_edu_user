@@ -1,8 +1,11 @@
 from flask_pymongo import PyMongo
+from flask_cors import CORS
 from config import create_app
 import os
 
 app = create_app()
+CORS(app, resources={r'/*': {'origins': '*'}})
+app.config["MONGO_URI"] = os.environ.get('MONGO_URI')
 mongo = PyMongo(app)
 db = mongo.db
 
