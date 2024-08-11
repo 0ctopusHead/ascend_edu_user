@@ -16,7 +16,7 @@ jobs:
     - name: Set environment variables
       env:
         OPENAI_API_KEY: '${{ secrets.OPENAI_API_KEY }}'
-        MONGO_URI: '${{ ENV_SECRET.MONGO_URI }}'
+        MONGO_URI: '${{ env.MONGO_URI }}'
       run: |
         python -c "import os; print(os.environ.get('MONGO_URI'))"
       
