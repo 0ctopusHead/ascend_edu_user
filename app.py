@@ -8,7 +8,6 @@ db = mongo.db
 
 if __name__ == '__main__':
 
-
     from routes.ask_bp import ask_bp
     app.register_blueprint(ask_bp)
     from routes.faqs_bp import faqs_bp
