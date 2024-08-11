@@ -1,0 +1,14 @@
+Flask==3.0.3
+scikit-learn==1.5.1
+scipy==1.13.0
+numpy==1.26.4
+flask_timeloop==0.2.4
+flask-cors==4.0.0
+flask-pymongo==2.3.0
+nltk==3.8.1
+pandas==2.2.1
+tiktoken==0.6.0
+openai==1.16.2
+python-dotenv==1.0.1
+pymongo==4.6.3
+gunicorn==23.0.0
