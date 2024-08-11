@@ -21,6 +21,6 @@ services:
 
   web:
     build: '.'
-    image: octopushead/ascend_user:latest
+    image: octopushead/ascend-user:latest
     ports:
       - 5000:5000
