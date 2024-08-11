@@ -15,8 +15,8 @@ jobs:
 
     - name: Set environment variables
       env:
-        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         MONGO_URI: ${{ secrets.MONGO_URI }}
+
       run: |
         echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> ENV_SECRET
         echo "MONGO_URI=${{ secrets.MONGO_URI }}" >> ENV_SECRET
