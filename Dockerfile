@@ -5,6 +5,7 @@ COPY . /app
 
 RUN pip install --no-cache-dir -r requirements.txt
 
+RUN mkdir -p /certs
 EXPOSE 5000
 
 CMD ["gunicorn", "-w", "4", "-b", ":5000", "--certfile", "/certs/chain.pem", "--keyfile", "/certs/key.pem", "app:app"]
