@@ -67,9 +67,7 @@ jobs:
           cd /home/root/backend
           echo ${{ secrets.DOCKER_HUB_TOKEN }} | docker login --username ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
           mv docker-compose.yml docker-compose.yml
-          docker compose down
-          docker compose pull
-          docker compose up -d
+          /home/root/backend/deploy.sh
           rm -rf /home/root/backend
           sudo systemctl restart gunicorn
           sudo systemctl restart nginx

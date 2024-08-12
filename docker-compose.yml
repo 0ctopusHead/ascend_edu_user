@@ -8,6 +8,5 @@ services:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
     ports:
       - 5000:5000
-    volumes:
-      - /home/root/certs:/certs
+
 
