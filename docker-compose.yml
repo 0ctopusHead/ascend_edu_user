@@ -6,6 +6,8 @@ services:
     environment:
       - MONGO_URI=${MONGO_URI}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
+    volumes:
+      - /home/root/certs:/certs:ro
     ports:
       - 5000:5000
 
