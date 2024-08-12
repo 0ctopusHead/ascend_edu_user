@@ -4,7 +4,7 @@ WORKDIR /app
 COPY . /app
 
 RUN pip install --no-cache-dir -r requirements.txt
-RUN python -m nltk.downloader punkt
+RUN python -m nltk.downloader punkt stopwords
 RUN mkdir -p /certs
 EXPOSE 5000
 
