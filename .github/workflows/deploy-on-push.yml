@@ -67,9 +67,9 @@ jobs:
           export OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}"
           cd /home/root/backend
           echo ${{ secrets.DOCKER_HUB_TOKEN }} | docker login --username ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
-          docker-compose down
-          docker-compose pull
-          docker-compose up -d
+          docker compose down
+          docker compose pull
+          docker compose up -d
           rm -rf /home/root/backend
           sudo systemctl restart gunicorn
           sudo systemctl restart nginx
