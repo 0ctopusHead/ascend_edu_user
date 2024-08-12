@@ -3,7 +3,6 @@ FROM python:3.10
 WORKDIR /app
 COPY . /app
 
-RUN mkdir -p /root/nltk_data && chmod -R 777 /root/nltk_data
 RUN pip install --no-cache-dir -r requirements.txt
 
 RUN mkdir -p /certs
