@@ -8,4 +8,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN mkdir -p /certs
 EXPOSE 5000
 
-CMD ["gunicorn", "-b", ":5000", "--certfile", "/certs/chain.pem", "--keyfile", "/certs/key.pem", "app:app"]
+CMD ["gunicorn", "-b", ":5000", "--certfile", "/ascendedu.systems.chained.crt", "--keyfile", "/ascendedu.systems.key", "app:app"]
