@@ -17,7 +17,6 @@ def callback():
     signature = request.headers['X-Line-Signature']
     body = request.get_data(as_text=True)
     app.logger.info("Request body: " + body)
-
     try:
         handler.handle(body, signature)
     except InvalidSignatureError:
@@ -29,8 +28,7 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    data = request.get_json()
-    query = data.get('query')
+    query = event.message.text.lower()
     ask_controller = AskController()
     faqs_controller = FAQsController()
 
@@ -55,13 +53,11 @@ def handle_message(event):
         line_bot_api.reply_message(event.reply_token, template_message)
 
     else:
-
         response_message = ask_controller.ask_endpoint(query)
         faqs_controller.handle_user_query(query)
+        line_bot_api.reply_message(event.reply_token,
+                               TextSendMessage(response_message))
 
-        line_bot_api.reply_message(event.reply_token, TextSendMessage(text=response_message))
-        return jsonify(
-            {'response_message': response_message})
 
 
 @ask_bp.route('/ask/', methods=['POST'])
