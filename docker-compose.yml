@@ -6,6 +6,8 @@ services:
     environment:
       - MONGO_URI=${MONGO_URI}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - CHANEL_SECRET=${CHANEL_SECRET}
+      - CHANEL_ACCESS_TOKEN=${CHANEL_ACCESS_TOKEN}
     volumes:
       - /home/root/certs:/certs:ro
     ports:
