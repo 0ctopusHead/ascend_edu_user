@@ -12,7 +12,7 @@ from app import app, handler, line_bot_api
 ask_bp = Blueprint('ask_bp', __name__)
 
 
-@ask_bp.route("/callback", methods=['POST'])
+@ask_bp.route("/callback", methods=['GET', 'POST'])
 def callback():
     signature = request.headers['X-Line-Signature']
     body = request.get_data(as_text=True)
@@ -34,6 +34,7 @@ def handle_message(event):
 
     if query == "faqs":
         faqs = faqs_controller.get_faqs()
+        print(faqs)
         if faqs:
             buttons_template = ButtonsTemplate(
                 title='FAQs',
