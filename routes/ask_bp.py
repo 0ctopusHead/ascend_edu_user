@@ -9,6 +9,7 @@ from linebot.models import (MessageEvent,
                             TextSendMessage, CarouselTemplate, CarouselColumn, TemplateSendMessage,
                             MessageAction)
 from app import app, handler, line_bot_api
+from flask import session
 
 ask_bp = Blueprint('ask_bp', __name__)
 
@@ -31,6 +32,7 @@ def callback():
 def handle_message(event):
     try:
         query = event.message.text.lower()
+        print(query)
         ask_controller = AskController()
         faqs_controller = FAQsController()
         if not query:
@@ -62,6 +64,7 @@ def handle_message(event):
             response_message = ask_controller.ask_endpoint(query)
             faqs_controller.handle_user_query(query)
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text=response_message))
+            session.clear()
 
     except Exception as e:
         app.logger.error(f"Exception in handle_message: {e}")
