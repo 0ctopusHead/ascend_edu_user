@@ -6,9 +6,10 @@ from linebot.v3.exceptions import (
 )
 from linebot.models import (MessageEvent,
                             TextMessage,
-                            TextSendMessage,ButtonsTemplate,TemplateSendMessage,
+                            TextSendMessage, ButtonsTemplate, TemplateSendMessage,
                             MessageAction)
 from app import app, handler, line_bot_api
+
 ask_bp = Blueprint('ask_bp', __name__)
 
 
@@ -28,37 +29,39 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    query = event.message.text.lower()
-    ask_controller = AskController()
-    faqs_controller = FAQsController()
+    try:
+        query = event.message.text.lower()
+        ask_controller = AskController()
+        faqs_controller = FAQsController()
+        if not event.reply_token:
+            app.logger.error("No reply token found.")
+            return
+        if query == "faqs":
+            faqs = faqs_controller.get_faqs()
+            if faqs:
+                buttons_template = ButtonsTemplate(
+                    title='FAQs',
+                    text='Please select a FAQ:',
+                    actions=[
+                        MessageAction(label=faq["question"], text=faq["question"])
+                        for faq in faqs
+                    ]
+                )
+                template_message = TemplateSendMessage(
+                    alt_text='FAQs',
+                    template=buttons_template
+                )
+            else:
+                template_message = TextSendMessage(text="No FAQs are available at the moment.")
 
-    if query == "faqs":
-        faqs = faqs_controller.get_faqs()
-        print(faqs)
-        if faqs:
-            buttons_template = ButtonsTemplate(
-                title='FAQs',
-                text='Please select a FAQ:',
-                actions=[
-                    MessageAction(label=faq["question"], text=faq["question"])
-                    for faq in faqs
-                ]
-            )
-            template_message = TemplateSendMessage(
-                alt_text='FAQs',
-                template=buttons_template
-            )
+            line_bot_api.reply_message(event.reply_token, template_message)
+
         else:
-            template_message = TextSendMessage(text="No FAQs are available at the moment.")
-
-        line_bot_api.reply_message(event.reply_token, template_message)
-
-    else:
-        response_message = ask_controller.ask_endpoint(query)
-        faqs_controller.handle_user_query(query)
-        line_bot_api.reply_message(event.reply_token,
-                               TextSendMessage(response_message))
-
+            response_message = ask_controller.ask_endpoint(query)
+            faqs_controller.handle_user_query(query)
+            line_bot_api.reply_message(event.reply_token, TextSendMessage(text=response_message))
+    except Exception as e:
+        app.logger.error(f"Exception in handle_message: {e}")
 
 
 @ask_bp.route('/ask/', methods=['POST'])
