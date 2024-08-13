@@ -10,8 +10,6 @@ db = mongo.db
 
 chanel_secret = os.environ.get('CHANEL_SECRET')
 chanel_access_token = os.environ.get('CHANEL_ACCESS_TOKEN')
-print("access token: " + chanel_access_token)
-print(chanel_secret)
 line_bot_api = LineBotApi(chanel_access_token)
 handler = WebhookHandler(chanel_secret)
 
