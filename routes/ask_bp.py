@@ -61,13 +61,21 @@ def handle_message(event):
             line_bot_api.reply_message(event.reply_token, template_message)
 
         else:
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text="Processing your request...")
+            )
             response_message = ask_controller.ask_endpoint(query)
             faqs_controller.handle_user_query(query)
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text=response_message))
-            session.clear()
+
+            line_bot_api.push_message(
+                event.source.user_id,
+                TextSendMessage(text=response_message)
+            )
 
     except Exception as e:
         app.logger.error(f"Exception in handle_message: {e}")
+
 
 @ask_bp.route('/ask/', methods=['POST'])
 def ask_endpoint():
