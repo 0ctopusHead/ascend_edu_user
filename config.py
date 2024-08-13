@@ -4,7 +4,6 @@ import os
 
 
 def create_app():
-
     app = Flask(__name__)
     CORS(app, resources={r'/*': {'origins': '*'}})
     MONGO_URI = os.environ.get('MONGO_URI')

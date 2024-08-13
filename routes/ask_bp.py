@@ -29,7 +29,8 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    query = event.message.text.lower()
+    data = request.get_json()
+    query = data.get('query')
     ask_controller = AskController()
     faqs_controller = FAQsController()
 
@@ -41,7 +42,7 @@ def handle_message(event):
                 text='Please select a FAQ:',
                 actions=[
                     MessageAction(label=faq["question"], text=faq["question"])
-                    for faq in faqs["faqs"]
+                    for faq in faqs
                 ]
             )
             template_message = TemplateSendMessage(
@@ -62,9 +63,11 @@ def handle_message(event):
         return jsonify(
             {'response_message': response_message})
 
+
 @ask_bp.route('/ask/', methods=['POST'])
-def ask_endpoint(event):
-    query = event.message.text
+def ask_endpoint():
+    data = request.get_json()
+    query = data.get('query')
     ask_controller = AskController()
     faqs_controller = FAQsController()
     response_message = ask_controller.ask_endpoint(query)
