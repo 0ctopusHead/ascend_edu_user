@@ -6,9 +6,7 @@ from linebot.v3.exceptions import (
 )
 from linebot.models import (MessageEvent,
                             TextMessage,
-                            TextSendMessage,
-                            QuickReply,
-                            QuickReplyButton,
+                            TextSendMessage,ButtonsTemplate,TemplateSendMessage,
                             MessageAction)
 from app import app, handler, line_bot_api
 ask_bp = Blueprint('ask_bp', __name__)
@@ -37,27 +35,32 @@ def handle_message(event):
 
     if query == "faqs":
         faqs = faqs_controller.get_faqs()
-
         if faqs:
-            quick_reply_items = [
-                QuickReplyButton(action=MessageAction(label=f"FAQ {index + 1}", text=faq))
-                for index, faq in enumerate(faqs)
-            ]
-
-            quick_reply = QuickReply(items=quick_reply_items)
-            response_message = TextSendMessage(text="Please select a FAQ:", quick_reply=quick_reply)
+            buttons_template = ButtonsTemplate(
+                title='FAQs',
+                text='Please select a FAQ:',
+                actions=[
+                    MessageAction(label=faq["question"], text=faq["question"])
+                    for faq in faqs["faqs"]
+                ]
+            )
+            template_message = TemplateSendMessage(
+                alt_text='FAQs',
+                template=buttons_template
+            )
         else:
-            response_message = TextSendMessage(text="No FAQs are available at the moment.")
+            template_message = TextSendMessage(text="No FAQs are available at the moment.")
 
-        line_bot_api.reply_message(event.reply_token, response_message)
+        line_bot_api.reply_message(event.reply_token, template_message)
 
     else:
+
         response_message = ask_controller.ask_endpoint(query)
         faqs_controller.handle_user_query(query)
 
-    return jsonify(
-        {'response_message': response_message})
-
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text=response_message))
+        return jsonify(
+            {'response_message': response_message})
 
 @ask_bp.route('/ask/', methods=['POST'])
 def ask_endpoint(event):
