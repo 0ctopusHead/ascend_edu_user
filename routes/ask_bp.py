@@ -9,7 +9,7 @@ from linebot.models import (MessageEvent,
                             TextSendMessage, CarouselTemplate, CarouselColumn, TemplateSendMessage,
                             MessageAction)
 from app import app, handler, line_bot_api
-from flask import session
+
 
 ask_bp = Blueprint('ask_bp', __name__)
 
@@ -40,11 +40,12 @@ def handle_message(event):
 
         if query == "faqs":
             faqs = faqs_controller.get_faqs()
-            if faqs:
+
+            if isinstance(faqs, list) and faqs:
                 columns = [
                     CarouselColumn(
                         title='FAQ',
-                        text=faq["question"][:60],
+                        text=faq["question"][:60],  # Limiting the text to 60 characters
                         actions=[MessageAction(label='See Answer', text=faq["question"])]
                     )
                     for faq in faqs
@@ -56,8 +57,8 @@ def handle_message(event):
                     template=carousel_template
                 )
             else:
-                template_message = TextSendMessage(text="No FAQs are available at the moment.")
-
+                error_message = faqs if isinstance(faqs, str) else "No FAQs are available at the moment."
+                template_message = TextSendMessage(text=error_message)
             line_bot_api.reply_message(event.reply_token, template_message)
 
         else:
