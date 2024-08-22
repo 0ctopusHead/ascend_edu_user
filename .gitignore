@@ -2,3 +2,5 @@
 key.pem
 cert.pem
 /certs
+chain.pem
+

@@ -16,14 +16,14 @@ def compute_and_store_faqs_tasks():
         return response_message, status_code
 
 
-@faqs_bp.route('/compute_faqs', methods=['POST'])
+@faqs_bp.route('/compute_faqs/', methods=['POST'])
 def trigger_compute_and_store_faqs():
     response_message, status_code = compute_and_store_faqs_tasks()
     return response_message, status_code
 
 
-@faqs_bp.route('/get_faqs', methods=['GET'])
+@faqs_bp.route('/get_faqs/', methods=['GET'])
 def get_frequently_asked_question():
     faqs_controller = FAQsController()
     faqs = faqs_controller.get_faqs()
-    return jsonify({"faqs": faqs})
+    return faqs
