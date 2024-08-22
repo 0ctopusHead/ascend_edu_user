@@ -1,1 +1,4 @@
 .env
+key.pem
+cert.pem
+/certs

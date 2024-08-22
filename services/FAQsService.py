@@ -59,38 +59,35 @@ class FAQsService:
             raise e
 
     def identify_potential_faqs(self, top_n=5):
-        try:
-            two_weeks_ago = datetime.datetime.utcnow() - datetime.timedelta(weeks=2)
-            recent_queries = list(self.database.queries_collection.find({"date": {"$gte": two_weeks_ago}}))
-            if not recent_queries:
-                raise ValueError("Could not find any queries from the last two weeks")
+        two_weeks_ago = datetime.datetime.utcnow() - datetime.timedelta(weeks=2)
+        recent_queries = list(self.database.queries_collection.find({"date": {"$gte": two_weeks_ago}}))
+        if not recent_queries:
+            raise ValueError("Could not find any queries from the last two weeks")
 
-            query_texts = [" ".join(query['processed_tokens']) for query in recent_queries]
-            predefined_faqs = self.predefined_faqs
-            faq_texts = [faq['question'] for faq in predefined_faqs]
+        query_texts = [" ".join(query['processed_tokens']) for query in recent_queries]
+        predefined_faqs = self.predefined_faqs
+        faq_texts = [faq['question'] for faq in predefined_faqs]
 
-            self.bm25.fit(faq_texts)
-            scores = []
-            for query in query_texts:
-                score = self.bm25.transform(query)
-                scores.append(score)
-            average_scores = np.mean(scores, axis=0)
-            print(average_scores)
-            top_indices = np.argsort(average_scores)[-top_n:][::-1]
-            potential_faqs = [faq_texts[i] for i in top_indices]
+        self.bm25.fit(faq_texts)
+        scores = []
+        for query in query_texts:
+            score = self.bm25.transform(query)
+            scores.append(score)
+        average_scores = np.mean(scores, axis=0)
+        print(average_scores)
+        top_indices = np.argsort(average_scores)[-top_n:][::-1]
+        potential_faqs = [faq_texts[i] for i in top_indices]
 
-            self.database.faqs_collection.delete_many({})
-            for faq in potential_faqs:
-                faq_doc = {
-                    "_id": str(ObjectId()),
-                    "question": faq,
-                    "date": datetime.datetime.utcnow()
-                }
-                self.database.faqs_collection.update_one({"question": faq}, {"$set": faq_doc}, upsert=True)
+        self.database.faqs_collection.delete_many({})
+        for faq in potential_faqs:
+            faq_doc = {
+                "_id": str(ObjectId()),
+                "question": faq,
+                "date": datetime.datetime.utcnow()
+            }
+            self.database.faqs_collection.update_one({"question": faq}, {"$set": faq_doc}, upsert=True)
+        return jsonify({"message": "The FAQs are successfully calculated"}), 200
 
-            return jsonify({"message": "The FAQs are successfully calculated"}), 200
-        except Exception as e:
-            raise e
 
     def get_faqs(self):
         try:
