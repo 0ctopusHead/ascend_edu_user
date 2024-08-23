@@ -1,6 +1,4 @@
 from flask import jsonify, Blueprint, request
-from controller.AskController import AskController
-from controller.FAQsController import FAQsController
 from linebot.v3.exceptions import (
     InvalidSignatureError
 )
@@ -30,6 +28,8 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
+    from controller.AskController import AskController
+    from controller.FAQsController import FAQsController
     try:
         query = event.message.text.lower()
         print(query)
@@ -80,6 +80,8 @@ def handle_message(event):
 
 @ask_bp.route('/ask/', methods=['POST'])
 def ask_endpoint():
+    from controller.AskController import AskController
+    from controller.FAQsController import FAQsController
     data = request.get_json()
     query = data.get('query')
     ask_controller = AskController()

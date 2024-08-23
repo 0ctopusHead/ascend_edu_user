@@ -1,5 +1,4 @@
 from flask import Blueprint, jsonify
-from controller.FAQsController import FAQsController
 from utils.extensions import timeloop
 from datetime import timedelta
 from app import app
@@ -9,6 +8,7 @@ app = app
 
 @timeloop.job(interval=timedelta(weeks=2))
 def compute_and_store_faqs_tasks():
+    from controller.FAQsController import FAQsController
     with app.app_context():
         print("FAQs have been computed")
         faqs_controller = FAQsController()
@@ -24,6 +24,7 @@ def trigger_compute_and_store_faqs():
 
 @faqs_bp.route('/get_faqs/', methods=['GET'])
 def get_frequently_asked_question():
+    from controller.FAQsController import FAQsController
     faqs_controller = FAQsController()
     faqs = faqs_controller.get_faqs()
     return faqs
