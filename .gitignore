@@ -3,4 +3,5 @@ key.pem
 cert.pem
 /certs
 chain.pem
-
+new_cert.pem
+new_key.pem
