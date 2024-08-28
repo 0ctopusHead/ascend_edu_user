@@ -67,7 +67,7 @@ class AskService:
             files = self.client.files.list().data
 
             def fetch_file_data(file):
-                return self.retrieve_json_from_openai(file.id)
+                return self.retrieve_json_from_openai(file. id)
 
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 all_data = list(executor.map(fetch_file_data, files))
