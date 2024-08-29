@@ -2,7 +2,6 @@ from flask_pymongo import PyMongo
 from config import create_app
 from linebot import LineBotApi, WebhookHandler
 import os
-
 app = create_app()
 
 mongo = PyMongo(app)
@@ -21,6 +20,8 @@ def register_blueprints(app):
     from routes.faqs_bp import faqs_bp
     app.register_blueprint(faqs_bp)
 
+    from routes.authen_bp import authen_bp
+    app.register_blueprint(authen_bp)
 
 register_blueprints(app)
 

@@ -86,7 +86,7 @@ class FAQsService:
                 "date": datetime.datetime.utcnow()
             }
             self.database.faqs_collection.update_one({"question": faq}, {"$set": faq_doc}, upsert=True)
-        return jsonify({"message": "The FAQs are successfully calculated"}), 200
+        return jsonify({"message": "Top 5 potential FAQs have been successfully identified and updated in the database."}), 200
 
 
     def get_faqs(self):

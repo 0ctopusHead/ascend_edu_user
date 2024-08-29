@@ -44,7 +44,7 @@ class TestIdentifyFAQs(unittest.TestCase):
             upsert=True
         )
 
-        mock_jsonify.assert_called_with({"message": "The FAQs are successfully calculated"})
+        mock_jsonify.assert_called_with({"message": "Top 5 potential FAQs have been successfully identified and updated in the database."})
         self.assertEqual(status_code, 200)
 
 
