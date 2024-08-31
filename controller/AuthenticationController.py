@@ -19,24 +19,11 @@ class AuthenticationController:
             return jsonify({'error': 'Failed to obtain access token.'}), 400
 
         session['access_token'] = access_token
-        print("Test: " + session['access_token'])
+
         user_info = self.oauth_service.get_user_info(access_token)
-        print(user_info)
-        if not user_info:
-            return jsonify({'error': 'Failed to retrieve user information.'}), 400
+        return jsonify(user_info), 200
 
-        return jsonify({'message': 'Successfully logged in.'}), 200
 
-    def user_info(self):
-        try:
-            access_token = session.get('access_token')
-            user_info = self.oauth_service.get_user_info(access_token)
-            if user_info:
-                return user_info
-            else:
-                raise FileNotFoundError
-        except Exception as e:
-            return str(e), 401
 
     def get_stored_token(self):
         access_token = self.oauth_service.get_stored_token()

@@ -4,7 +4,6 @@ from flask import request, jsonify, session
 import os
 from dotenv import load_dotenv
 import requests
-from requests import session
 
 load_dotenv()
 REDIRECT_URI = 'https://lineedu.ascendedu.systems/login_callback'
@@ -19,14 +18,13 @@ class AuthenticationService:
         self.client_id = CLIENT_ID
         self.client_secret = CLIENT_SECRET
         self.redirect_uri = REDIRECT_URI
-        self.access_token = None  # In-memory store for token
+        self.access_token = None
 
     def get_login_url(self):
         login_url = f'{AUTH_ENDPOINT}?response_type=code&client_id={self.client_id}&redirect_uri={self.redirect_uri}&scope=cmuitaccount.basicinfo'
         return login_url
 
     def get_access_token(self, code):
-        """Exchanges the authorization code for an access token."""
         data = {
             'code': code,
             'redirect_uri': self.redirect_uri,
@@ -38,7 +36,8 @@ class AuthenticationService:
         response = requests.post(TOKEN_ENDPOINT, data=data)
         if response.status_code == 200:
             tokens = response.json()
-            self.access_token = tokens.get('access_token')  # Store token
+            self.access_token = tokens.get('access_token')
+            session['access_token'] = self.access_token
             return self.access_token
         else:
             return None
@@ -58,5 +57,4 @@ class AuthenticationService:
             raise e
 
     def get_stored_token(self):
-        """Retrieve the stored access token."""
         return self.access_token

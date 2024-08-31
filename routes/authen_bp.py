@@ -10,28 +10,5 @@ def login():
     return oauth_controller.login()
 
 
-@authen_bp.route('/userinfo', methods=['GET'])
-def user_info():
-    return oauth_controller.user_info()
 
 
-@authen_bp.route('/store_token', methods=['POST'])
-def store_token():
-    data = request.get_json()
-    code = data.get('code')
-
-    if code:
-        access_token = oauth_controller.get_access_token(code)
-        if access_token:
-            return jsonify({'status': 'Token stored successfully', 'access_token': access_token}), 200
-        else:
-            return jsonify({'status': 'Failed to store token'}), 400
-    return jsonify({'status': 'No code provided'}), 400
-
-
-@authen_bp.route('/get_token', methods=['GET'])
-def get_token():
-    token = oauth_controller.get_stored_token()
-    if token:
-        return jsonify({'access_token': token}), 200
-    return jsonify({'status': 'No token available'}), 404
